@@ -876,6 +876,96 @@ body {
       </button>
     </div>
   </div>
+
+  <!-- Step 3: Visible Damage Signs -->
+  <div class="step-card" id="step3">
+    <div class="step-number">Question 3 of 5</div>
+    <h2>Do you see any of these signs around your property?</h2>
+    <p style="font-size:14px;color:#888;margin-bottom:18px;">Select all that apply. Even one sign could indicate claimable damage.</p>
+    <div class="damage-counter" id="damageCounter"></div>
+    <div class="checkbox-list" id="damageChecklist">
+      <div class="check-item" data-sign="shingles" onclick="toggleCheck(this)">
+        <div class="check-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="check-text">
+          <div class="check-title">Missing or lifted shingles</div>
+          <div class="check-desc">Shingles blown off, curled up, or out of place</div>
+        </div>
+        <span class="check-count">!</span>
+      </div>
+      <div class="check-item" data-sign="gutters" onclick="toggleCheck(this)">
+        <div class="check-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="check-text">
+          <div class="check-title">Dents or dings on gutters/downspouts</div>
+          <div class="check-desc">Hail impact marks on metal surfaces</div>
+        </div>
+        <span class="check-count">!</span>
+      </div>
+      <div class="check-item" data-sign="granules" onclick="toggleCheck(this)">
+        <div class="check-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="check-text">
+          <div class="check-title">Granules collecting in gutters or at base</div>
+          <div class="check-desc">Sandy material washing off damaged shingles</div>
+        </div>
+        <span class="check-count">!</span>
+      </div>
+      <div class="check-item" data-sign="cracked" onclick="toggleCheck(this)">
+        <div class="check-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="check-text">
+          <div class="check-title">Cracked or broken shingles</div>
+          <div class="check-desc">Visible fractures or splits in roofing material</div>
+        </div>
+        <span class="check-count">!</span>
+      </div>
+      <div class="check-item" data-sign="water" onclick="toggleCheck(this)">
+        <div class="check-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="check-text">
+          <div class="check-title">Water stains on ceiling or walls inside</div>
+          <div class="check-desc">Brown spots, bubbling paint, or damp areas</div>
+        </div>
+        <span class="check-count">!</span>
+      </div>
+      <div class="check-item" data-sign="flashing" onclick="toggleCheck(this)">
+        <div class="check-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="check-text">
+          <div class="check-title">Damaged flashing around vents/chimney</div>
+          <div class="check-desc">Bent, cracked, or missing metal around roof penetrations</div>
+        </div>
+        <span class="check-count">!</span>
+      </div>
+      <div class="check-item" data-sign="property" onclick="toggleCheck(this)">
+        <div class="check-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="check-text">
+          <div class="check-title">Dented AC unit, mailbox, or car</div>
+          <div class="check-desc">Impact damage on other property surfaces from hail</div>
+        </div>
+        <span class="check-count">!</span>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goBack(2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back
+      </button>
+      <button class="btn-next" id="next3" onclick="goNext(4)">
+        Next
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+  </div>
 </div>
 
 </body>
