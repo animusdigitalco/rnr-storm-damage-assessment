@@ -966,6 +966,78 @@ body {
       </button>
     </div>
   </div>
+
+  <!-- Step 4: Roof Age -->
+  <div class="step-card" id="step4">
+    <div class="step-number">Question 4 of 5</div>
+    <h2>How old is your roof?</h2>
+    <div class="options-grid three-col" data-question="roofAge">
+      <div class="option-card" data-value="0_5" onclick="selectOption(this)">
+        <span class="option-icon">&#127968;</span>
+        <span class="option-label">0-5 years</span>
+      </div>
+      <div class="option-card" data-value="5_10" onclick="selectOption(this)">
+        <span class="option-icon">&#127969;</span>
+        <span class="option-label">5-10 years</span>
+      </div>
+      <div class="option-card" data-value="10_15" onclick="selectOption(this)">
+        <span class="option-icon">&#127970;</span>
+        <span class="option-label">10-15 years</span>
+      </div>
+      <div class="option-card" data-value="15_20" onclick="selectOption(this)">
+        <span class="option-icon">&#128679;</span>
+        <span class="option-label">15-20 years</span>
+      </div>
+      <div class="option-card" data-value="20_plus" onclick="selectOption(this)">
+        <span class="option-icon">&#9888;&#65039;</span>
+        <span class="option-label">20+ years</span>
+      </div>
+      <div class="option-card" data-value="unknown" onclick="selectOption(this)">
+        <span class="option-icon">&#10068;</span>
+        <span class="option-label">Don't know</span>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goBack(3)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back
+      </button>
+      <button class="btn-next" id="next4" disabled onclick="goNext(5)">
+        Next
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 5: Insurance Claim -->
+  <div class="step-card" id="step5">
+    <div class="step-number">Question 5 of 5</div>
+    <h2>Have you filed a roofing insurance claim before?</h2>
+    <div class="options-grid three-col" data-question="insurance">
+      <div class="option-card" data-value="yes" onclick="selectOption(this)">
+        <span class="option-icon">&#9989;</span>
+        <span class="option-label">Yes</span>
+      </div>
+      <div class="option-card" data-value="no" onclick="selectOption(this)">
+        <span class="option-icon">&#10060;</span>
+        <span class="option-label">No</span>
+      </div>
+      <div class="option-card" data-value="not_sure" onclick="selectOption(this)">
+        <span class="option-icon">&#129300;</span>
+        <span class="option-label">Not sure</span>
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="btn-back" onclick="goBack(4)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back
+      </button>
+      <button class="btn-next" id="next5" disabled onclick="showResults()">
+        See My Results
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+  </div>
 </div>
 
 </body>
