@@ -1113,5 +1113,256 @@ body {
   <span id="toastText">Submitted!</span>
 </div>
 
+<script>
+// State
+const answers = {
+  timing: null,
+  stormType: null,
+  damagesSigns: [],
+  roofAge: null,
+  insurance: null
+};
+
+let currentStep = 0; // 0 = intro
+
+function startAssessment() {
+  document.getElementById('introScreen').style.display = 'none';
+  document.getElementById('progressWrap').classList.add('visible');
+  showStep(1);
+}
+
+function showStep(n) {
+  // Hide all steps
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById('step' + i).classList.remove('active');
+  }
+  document.getElementById('step' + n).classList.add('active');
+  currentStep = n;
+  updateProgress(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress(step) {
+  const pct = Math.round(((step - 1) / 5) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('stepNum').textContent = step;
+  document.getElementById('stepPercent').textContent = pct + '%';
+}
+
+function selectOption(el) {
+  const grid = el.parentElement;
+  const question = grid.dataset.question;
+  // Deselect siblings
+  grid.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  answers[question] = el.dataset.value;
+
+  // Enable next button
+  const stepNum = currentStep;
+  const nextBtn = document.getElementById('next' + stepNum);
+  if (nextBtn) {
+    nextBtn.disabled = false;
+    nextBtn.classList.add('pulse');
+  }
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  // Update answers
+  const signs = [];
+  document.querySelectorAll('#damageChecklist .check-item.checked').forEach(item => {
+    signs.push(item.dataset.sign);
+  });
+  answers.damagesSigns = signs;
+
+  // Update counter
+  const counter = document.getElementById('damageCounter');
+  const count = signs.length;
+  if (count === 0) {
+    counter.textContent = '';
+    counter.className = 'damage-counter';
+  } else if (count <= 2) {
+    counter.textContent = count + ' sign' + (count > 1 ? 's' : '') + ' selected';
+    counter.className = 'damage-counter';
+  } else if (count <= 4) {
+    counter.textContent = count + ' signs selected — possible damage';
+    counter.className = 'damage-counter warning';
+  } else {
+    counter.textContent = count + ' signs selected — strong indicators of damage';
+    counter.className = 'damage-counter critical';
+  }
+}
+
+function goNext(n) {
+  showStep(n);
+}
+
+function goBack(n) {
+  if (n === 0) {
+    // Go back to intro
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('introScreen').style.display = 'block';
+    document.getElementById('progressWrap').classList.remove('visible');
+    currentStep = 0;
+  } else {
+    showStep(n);
+  }
+}
+
+// Scoring
+function calculateScore() {
+  let score = 0;
+
+  // Timing
+  const timingScores = { last_week: 20, last_month: 18, '1_3_months': 12, '3_6_months': 8, '6_plus': 4 };
+  score += timingScores[answers.timing] || 0;
+
+  // Storm type
+  const stormScores = { hail: 20, tornado: 22, wind: 14, multiple: 20, ice: 12, rain: 8 };
+  score += stormScores[answers.stormType] || 0;
+
+  // Damage signs (8 points each, max 56)
+  score += answers.damagesSigns.length * 8;
+
+  // Roof age
+  const ageScores = { '0_5': 2, '5_10': 6, '10_15': 10, '15_20': 16, '20_plus': 20, unknown: 10 };
+  score += ageScores[answers.roofAge] || 0;
+
+  // Insurance
+  if (answers.insurance === 'no' || answers.insurance === 'not_sure') score += 4;
+
+  return score;
+}
+
+function getLevel(score) {
+  if (score >= 70) return { level: 'critical', label: 'Critical', text: 'Critical Risk', color: 'var(--red)' };
+  if (score >= 45) return { level: 'high', label: 'High', text: 'High Risk', color: 'var(--orange)' };
+  if (score >= 25) return { level: 'moderate', label: 'Moderate', text: 'Moderate Risk', color: 'var(--yellow)' };
+  return { level: 'low', label: 'Low', text: 'Low Risk', color: 'var(--green)' };
+}
+
+function getSummary(score, level) {
+  const signCount = answers.damagesSigns.length;
+  const stormLabel = {
+    hail: 'hail', tornado: 'a tornado', wind: 'high winds',
+    multiple: 'multiple storm types', ice: 'an ice storm', rain: 'heavy rain/flooding'
+  }[answers.stormType] || 'a storm';
+
+  const timingLabel = {
+    last_week: 'within the last week', last_month: 'within the last month',
+    '1_3_months': '1 to 3 months ago', '3_6_months': '3 to 6 months ago', '6_plus': 'over 6 months ago'
+  }[answers.timing] || 'recently';
+
+  if (level.level === 'critical') {
+    return `Based on your responses, there are <strong>multiple strong indicators</strong> of storm damage to your roof. You reported ${stormLabel} ${timingLabel}, and you've identified <strong>${signCount} visible sign${signCount !== 1 ? 's' : ''}</strong> of damage. This combination strongly suggests your roof sustained damage that is very likely covered by your homeowner's insurance. We recommend scheduling a professional inspection immediately.`;
+  } else if (level.level === 'high') {
+    return `Your answers suggest a <strong>high likelihood</strong> of storm damage. You experienced ${stormLabel} ${timingLabel}${signCount > 0 ? `, and you've noticed <strong>${signCount} warning sign${signCount !== 1 ? 's' : ''}</strong>` : ''}. Many homeowners in your situation discover claimable damage once a professional inspects the roof. A free inspection can confirm whether you have a valid claim.`;
+  } else if (level.level === 'moderate') {
+    return `There's a <strong>moderate chance</strong> your roof has some storm damage. You reported ${stormLabel} ${timingLabel}${signCount > 0 ? `, along with ${signCount} potential sign${signCount !== 1 ? 's' : ''} of damage` : ''}. Storm damage isn't always visible from the ground — even small hail can cause hidden damage that leads to leaks later. A professional inspection is the only way to know for sure.`;
+  } else {
+    return `Based on your answers, the risk of significant storm damage appears <strong>lower</strong> at this time. However, not all damage is visible without a professional inspection. ${stormLabel.charAt(0).toUpperCase() + stormLabel.slice(1)} can cause subtle damage that worsens over time. If you have any concerns, a free inspection can give you peace of mind.`;
+  }
+}
+
+function getSteps(level) {
+  const steps = [];
+  if (level.level === 'critical' || level.level === 'high') {
+    steps.push('<strong>Schedule a free professional inspection immediately.</strong> Time-sensitive damage should be documented before it worsens.');
+    steps.push('<strong>Do not make permanent repairs yet.</strong> Your insurance adjuster needs to see the damage firsthand.');
+    steps.push('<strong>Document everything.</strong> Take photos of any visible damage from the ground — gutters, siding, AC unit, cars.');
+    steps.push('<strong>Check your insurance policy.</strong> Most Oklahoma policies cover storm damage, but there are filing deadlines.');
+    steps.push('R&R Roofing handles the entire claim process — from inspection to insurance paperwork to final repair.');
+  } else if (level.level === 'moderate') {
+    steps.push('<strong>Schedule a free inspection.</strong> Many homeowners are surprised to learn they have claimable damage that isn\'t visible from the ground.');
+    steps.push('<strong>Take ground-level photos</strong> of your roof, gutters, and any outdoor surfaces that may show hail or wind damage.');
+    steps.push('<strong>Check your attic</strong> for any signs of moisture, daylight through the roof deck, or water stains.');
+    steps.push('A professional can determine if you have a valid insurance claim — at no cost to you.');
+  } else {
+    steps.push('Keep an eye on your roof after future storms — damage can be cumulative.');
+    steps.push('If you notice any new signs (leaks, granules in gutters, lifted shingles), schedule a free inspection right away.');
+    steps.push('Consider a proactive roof inspection if your roof is over 10 years old, even without visible storm damage.');
+  }
+  return steps;
+}
+
+function showResults() {
+  // Hide step 5 and progress
+  document.getElementById('step5').classList.remove('active');
+  document.getElementById('progressWrap').classList.remove('visible');
+
+  const score = calculateScore();
+  const level = getLevel(score);
+
+  // Badge
+  const badge = document.getElementById('resultBadge');
+  badge.className = 'result-badge ' + level.level;
+  document.getElementById('resultLabel').textContent = 'Damage Likelihood';
+  document.getElementById('resultLevel').textContent = level.text;
+
+  // Summary
+  document.getElementById('summaryText').innerHTML = getSummary(score, level);
+
+  // Steps
+  const steps = getSteps(level);
+  document.getElementById('stepsList').innerHTML = steps.map(s => '<li>' + s + '</li>').join('');
+
+  // Show results
+  document.getElementById('resultsScreen').classList.add('active');
+  updateProgress(5);
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('stepPercent').textContent = '100%';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function submitForm(e) {
+  e.preventDefault();
+  const name = document.getElementById('formName').value;
+  const phone = document.getElementById('formPhone').value;
+  const email = document.getElementById('formEmail').value;
+  const address = document.getElementById('formAddress').value;
+
+  // In production, this would POST to a server/webhook
+  console.log('Form submitted:', { name, phone, email, address, answers, score: calculateScore() });
+
+  showToast('Request submitted! We\'ll call you shortly.');
+  document.getElementById('contactForm').reset();
+}
+
+function showToast(text) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastText').textContent = text;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+function restart() {
+  // Reset state
+  answers.timing = null;
+  answers.stormType = null;
+  answers.damagesSigns = [];
+  answers.roofAge = null;
+  answers.insurance = null;
+
+  // Reset UI
+  document.querySelectorAll('.option-card.selected').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.check-item.checked').forEach(c => c.classList.remove('checked'));
+  document.getElementById('damageCounter').textContent = '';
+  document.getElementById('damageCounter').className = 'damage-counter';
+
+  for (let i = 1; i <= 5; i++) {
+    const btn = document.getElementById('next' + i);
+    if (btn && i !== 3) btn.disabled = true;
+    if (btn) btn.classList.remove('pulse');
+  }
+
+  document.getElementById('resultsScreen').classList.remove('active');
+  document.getElementById('introScreen').style.display = 'block';
+  document.getElementById('progressWrap').classList.remove('visible');
+  document.getElementById('progressFill').style.width = '0%';
+  currentStep = 0;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
 </body>
 </html>
